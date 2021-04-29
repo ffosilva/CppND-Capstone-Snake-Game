@@ -7,21 +7,21 @@
 
 class Renderer {
  public:
-  Renderer(const std::size_t screen_width, const std::size_t screen_height,
-           const std::size_t grid_width, const std::size_t grid_height);
+  Renderer(int screen_width, int screen_height,
+           int grid_width, int grid_height);
   ~Renderer();
 
-  void Render(Snake const snake, SDL_Point const &food);
+  void Render(const Snake& snake, SDL_Point const &food);
   void UpdateWindowTitle(int score, int fps);
 
  private:
   SDL_Window *sdl_window;
   SDL_Renderer *sdl_renderer;
 
-  const std::size_t screen_width;
-  const std::size_t screen_height;
-  const std::size_t grid_width;
-  const std::size_t grid_height;
+  const int screen_width;
+  const int screen_height;
+  const int grid_width;
+  const int grid_height;
 };
 
 #endif
