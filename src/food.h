@@ -14,7 +14,7 @@ enum FoodKind {
 
 class Food {
 private:
-    SDL_Point _point;
+    SDL_Point _point{};
     FoodKind _kind;
 
 public:
