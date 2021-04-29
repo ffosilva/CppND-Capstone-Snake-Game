@@ -8,14 +8,17 @@ Game::Game(int grid_width, int grid_height)
         : snake(grid_width, grid_height),
           engine(dev()),
           random_w(0, static_cast<int>(grid_width - 1)),
-          random_h(0, static_cast<int>(grid_height - 1)) {
+          random_h(0, static_cast<int>(grid_height - 1)),
+          random_bonus(5, 15) {
     PlaceFood(FoodKind::Grow);
 }
 
 void Game::BonusThread() {
-
-//    while (true)
-//    PlaceFood(FoodKind::Shrink);
+    std::unique_lock<std::mutex> uniqueLock(bonusMutex);
+    while (running) {
+        cv.wait(uniqueLock);
+        PlaceFood(FoodKind::SlowDown);
+    }
 }
 
 void Game::Run(Controller const &controller, Renderer &renderer,
@@ -25,7 +28,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
     Uint32 frame_end;
     Uint32 frame_duration;
     int frame_count = 0;
-    bool running = true;
+    int nextBonusScore = random_bonus(engine);
 
     std::thread t(&Game::BonusThread, this);
     t.detach();
@@ -45,6 +48,14 @@ void Game::Run(Controller const &controller, Renderer &renderer,
         frame_count++;
         frame_duration = frame_end - frame_start;
 
+        if (scoreSinceBonus >= nextBonusScore && !hasBonusFood)
+        {
+            hasBonusFood = true;
+            nextBonusScore = random_bonus(engine);
+            std::unique_lock<std::mutex> uniqueLock(bonusMutex);
+            cv.notify_one();
+        }
+
         // After every second, update the window title.
         if (frame_end - title_timestamp >= 1000) {
             renderer.UpdateWindowTitle(score, frame_count);
@@ -59,6 +70,8 @@ void Game::Run(Controller const &controller, Renderer &renderer,
             SDL_Delay(target_frame_duration - frame_duration);
         }
     }
+
+    cv.notify_one();
 }
 
 void Game::PlaceFood(FoodKind kind) {
@@ -87,7 +100,7 @@ size_t Game::CheckEat(FoodKind kind) {
 
     // Check if there's food over here
     food.erase(std::remove_if(food.begin(), food.end(), [new_x, new_y, kind](Food element) {
-        return element.GetKind() == 1 && element.GetPoint().x == new_x && element.GetPoint().y == new_y;
+        return element.GetKind() == kind && element.GetPoint().x == new_x && element.GetPoint().y == new_y;
     }), food.end());
 
     return originalFoodCount - food.size();
@@ -100,11 +113,18 @@ void Game::Update() {
 
     if (CheckEat(FoodKind::Grow) > 0) {
         score++;
+        scoreSinceBonus++;
         PlaceFood(FoodKind::Grow);
 
         // Grow snake and increase speed.
         snake.GrowBody();
         snake.speed += 0.02;
+    } else if (CheckEat(FoodKind::SlowDown) > 0) {
+        scoreSinceBonus = 0;
+        hasBonusFood = false;
+
+        // Decrease speed at half.
+        snake.speed /= 2;
     }
 }
 

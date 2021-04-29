@@ -56,7 +56,7 @@ void Renderer::Render(Snake const &snake, std::vector<Food> &food) {
             case FoodKind::Grow:
                 SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0xCC, 0x00, 0xFF);
                 break;
-            case FoodKind::Shrink:
+            case FoodKind::SlowDown:
             default:
                 SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0x00, 0xFF, 0xFF);
         }

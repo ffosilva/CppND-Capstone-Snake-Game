@@ -10,7 +10,7 @@
 enum FoodKind {
     None,
     Grow,
-    Shrink
+    SlowDown
 };
 
 class Food {
