@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include <random>
+#include <vector>
 #include "SDL.h"
 #include "controller.h"
 #include "renderer.h"
@@ -18,7 +19,7 @@ class Game {
 
  private:
   Snake snake;
-  Food food;
+  std::vector<Food> food;
 
   std::random_device dev;
   std::mt19937 engine;

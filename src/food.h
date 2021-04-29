@@ -8,6 +8,7 @@
 #include "SDL.h"
 
 enum FoodKind {
+    None,
     Grow,
     Shrink
 };
@@ -19,6 +20,8 @@ private:
 
 public:
     Food(int x, int y, FoodKind kind);
+
+    Food();
 
     SDL_Point GetPoint();
 

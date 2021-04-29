@@ -9,3 +9,8 @@ Food::Food(int x, int y, FoodKind kind) : _point(SDL_Point{.x = x, .y = y}), _ki
 SDL_Point Food::GetPoint() { return _point; }
 
 FoodKind Food::GetKind() { return _kind; }
+
+Food::Food() {
+    _point = SDL_Point{};
+    _kind = FoodKind::None;
+}
