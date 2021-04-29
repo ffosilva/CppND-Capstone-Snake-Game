@@ -3,6 +3,7 @@
 
 #include <random>
 #include <vector>
+#include <mutex>
 #include "SDL.h"
 #include "controller.h"
 #include "renderer.h"
@@ -11,7 +12,7 @@
 
 class Game {
  public:
-  Game(std::size_t grid_width, std::size_t grid_height);
+  Game(int grid_width, int grid_height);
   void Run(Controller const &controller, Renderer &renderer,
            std::size_t target_frame_duration);
   int GetScore() const;
@@ -20,6 +21,7 @@ class Game {
  private:
   Snake snake;
   std::vector<Food> food;
+  std::mutex foodMutex;
 
   std::random_device dev;
   std::mt19937 engine;
@@ -28,7 +30,10 @@ class Game {
 
   int score{0};
 
-  void PlaceFood();
+  void PlaceFood(FoodKind kind);
+  size_t CheckEat(FoodKind kind);
+
+  void BonusThread();
   void Update();
 };
 

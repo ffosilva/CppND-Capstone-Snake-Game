@@ -1,14 +1,21 @@
 #include "game.h"
 #include <iostream>
 #include <algorithm>
+#include <thread>
 #include "SDL.h"
 
-Game::Game(std::size_t grid_width, std::size_t grid_height)
+Game::Game(int grid_width, int grid_height)
         : snake(grid_width, grid_height),
           engine(dev()),
           random_w(0, static_cast<int>(grid_width - 1)),
           random_h(0, static_cast<int>(grid_height - 1)) {
-    PlaceFood();
+    PlaceFood(FoodKind::Grow);
+}
+
+void Game::BonusThread() {
+
+//    while (true)
+//    PlaceFood(FoodKind::Shrink);
 }
 
 void Game::Run(Controller const &controller, Renderer &renderer,
@@ -19,6 +26,9 @@ void Game::Run(Controller const &controller, Renderer &renderer,
     Uint32 frame_duration;
     int frame_count = 0;
     bool running = true;
+
+    std::thread t(&Game::BonusThread, this);
+    t.detach();
 
     while (running) {
         frame_start = SDL_GetTicks();
@@ -51,18 +61,36 @@ void Game::Run(Controller const &controller, Renderer &renderer,
     }
 }
 
-void Game::PlaceFood() {
+void Game::PlaceFood(FoodKind kind) {
+    std::scoped_lock<std::mutex> lock(foodMutex);
     int x, y;
     while (true) {
         x = random_w(engine);
         y = random_h(engine);
         // Check that the location is not occupied by a snake item before placing
         // food.
-        if (!snake.SnakeCell(x, y)) {
-            food.emplace_back(Food(x, y, FoodKind::Grow));
+        if (!std::any_of(food.begin(), food.end(),
+                         [x, y](Food f) {
+                             return f.GetPoint().x == x && f.GetPoint().y == y;
+                         }) && !snake.SnakeCell(x, y)) {
+            food.emplace_back(Food(x, y, kind));
             return;
         }
     }
+}
+
+size_t Game::CheckEat(FoodKind kind) {
+    int new_x = static_cast<int>(snake.head_x);
+    int new_y = static_cast<int>(snake.head_y);
+
+    auto originalFoodCount = food.size();
+
+    // Check if there's food over here
+    food.erase(std::remove_if(food.begin(), food.end(), [new_x, new_y, kind](Food element) {
+        return element.GetKind() == 1 && element.GetPoint().x == new_x && element.GetPoint().y == new_y;
+    }), food.end());
+
+    return originalFoodCount - food.size();
 }
 
 void Game::Update() {
@@ -70,20 +98,9 @@ void Game::Update() {
 
     snake.Update();
 
-    int new_x = static_cast<int>(snake.head_x);
-    int new_y = static_cast<int>(snake.head_y);
-
-    auto originalFoodCount = food.size();
-
-    // Check if there's food over here
-    food.erase(std::remove_if(food.begin(), food.end(), [new_x, new_y](Food element) {
-        return element.GetKind() == FoodKind::Grow && element.GetPoint().x == new_x && element.GetPoint().y == new_y;
-    }), food.end());
-
-    if (originalFoodCount != food.size())
-    {
+    if (CheckEat(FoodKind::Grow) > 0) {
         score++;
-        PlaceFood();
+        PlaceFood(FoodKind::Grow);
 
         // Grow snake and increase speed.
         snake.GrowBody();
