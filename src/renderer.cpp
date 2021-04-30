@@ -89,7 +89,14 @@ void Renderer::Render(Snake const &snake, std::vector<Food> &food) {
     SDL_RenderPresent(sdl_renderer);
 }
 
-void Renderer::UpdateWindowTitle(int score, int fps) {
-    std::string title{"Snake Score: " + std::to_string(score) + " FPS: " + std::to_string(fps)};
-    SDL_SetWindowTitle(sdl_window, title.c_str());
+void Renderer::UpdateWindowTitle(bool gameRunning, int score, int highScore) {
+    if (!gameRunning) {
+        SDL_SetWindowTitle(sdl_window,
+                           std::string(
+                                   "Press <ENTER> to start! | SNAKE++ | HIGH SCORE:" + std::to_string(highScore)).c_str());
+    } else {
+        SDL_SetWindowTitle(sdl_window,
+                           std::string(
+                                   "Snake Score: " + std::to_string(score) + " | SNAKE++ | HIGH SCORE:\" + std::to_string(highScore)").c_str());
+    }
 }

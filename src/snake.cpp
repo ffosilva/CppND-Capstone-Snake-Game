@@ -73,3 +73,13 @@ bool Snake::SnakeCell(int x, int y) {
 
   return std::any_of(body.begin(), body.end(), [x, y](auto item) { return x == item.x && y == item.y; });
 }
+
+void Snake::Reset() {
+  speed = 0.1f;
+  size = 1;
+  head_x = ((float) grid_width / 2);
+  head_y = ((float) grid_height / 2);
+  growing = false;
+  body.clear();
+  alive = true;
+}

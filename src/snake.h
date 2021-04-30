@@ -15,7 +15,7 @@ class Snake {
         head_y((float) grid_height / 2) {}
 
   void Update();
-
+  void Reset();
   void GrowBody();
   bool SnakeCell(int x, int y);
 
@@ -23,7 +23,7 @@ class Snake {
 
   float speed{0.1f};
   int size{1};
-  bool alive{true};
+  bool alive{false};
   float head_x;
   float head_y;
   std::vector<SDL_Point> body;

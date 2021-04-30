@@ -9,9 +9,7 @@ Game::Game(int grid_width, int grid_height)
           engine(dev()),
           random_w(0, static_cast<int>(grid_width - 1)),
           random_h(0, static_cast<int>(grid_height - 1)),
-          random_bonus(5, 15) {
-    PlaceFood(FoodKind::Grow);
-}
+          random_bonus(5, 15) { }
 
 void Game::BonusThread() {
     std::unique_lock<std::mutex> uniqueLock(bonusMutex);
@@ -21,14 +19,27 @@ void Game::BonusThread() {
     }
 }
 
-void Game::Run(Controller const &controller, Renderer &renderer,
+void Game::Initialize() {
+    if (snake.alive)
+        return;
+
+    score = 0;
+    scoreSinceBonus = 0;
+    hasBonusFood = false;
+    nextBonusScore = random_bonus(engine);
+    food.clear();
+    snake.Reset();
+
+    PlaceFood(FoodKind::Grow);
+}
+
+void Game::Run(Renderer &renderer,
                std::size_t target_frame_duration) {
     Uint32 title_timestamp = SDL_GetTicks();
     Uint32 frame_start;
     Uint32 frame_end;
     Uint32 frame_duration;
     int frame_count = 0;
-    int nextBonusScore = random_bonus(engine);
 
     std::thread t(&Game::BonusThread, this);
     t.detach();
@@ -37,7 +48,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
         frame_start = SDL_GetTicks();
 
         // Input, Update, Render - the main game loop.
-        controller.HandleInput(running, snake);
+        Controller::HandleInput(running, snake, [this] { Initialize(); });
         Update();
         renderer.Render(snake, food);
 
@@ -48,7 +59,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
         frame_count++;
         frame_duration = frame_end - frame_start;
 
-        if (scoreSinceBonus >= nextBonusScore && !hasBonusFood)
+        if (snake.alive && scoreSinceBonus >= nextBonusScore && !hasBonusFood)
         {
             hasBonusFood = true;
             nextBonusScore = random_bonus(engine);
@@ -58,7 +69,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
 
         // After every second, update the window title.
         if (frame_end - title_timestamp >= 1000) {
-            renderer.UpdateWindowTitle(score, frame_count);
+            renderer.UpdateWindowTitle(snake.alive, score, frame_count);
             frame_count = 0;
             title_timestamp = frame_end;
         }
