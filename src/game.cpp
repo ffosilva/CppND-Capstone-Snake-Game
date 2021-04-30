@@ -9,7 +9,10 @@ Game::Game(int grid_width, int grid_height)
           engine(dev()),
           random_w(0, static_cast<int>(grid_width - 1)),
           random_h(0, static_cast<int>(grid_height - 1)),
-          random_bonus(5, 15) { }
+          random_bonus(5, 15),
+          highScore("highscore.dat") {
+    snake.OnSnakeDieListener = [this] { OnSnakeDie(); };
+}
 
 void Game::BonusThread() {
     std::unique_lock<std::mutex> uniqueLock(bonusMutex);
@@ -59,8 +62,7 @@ void Game::Run(Renderer &renderer,
         frame_count++;
         frame_duration = frame_end - frame_start;
 
-        if (snake.alive && scoreSinceBonus >= nextBonusScore && !hasBonusFood)
-        {
+        if (snake.alive && scoreSinceBonus >= nextBonusScore && !hasBonusFood) {
             hasBonusFood = true;
             nextBonusScore = random_bonus(engine);
             std::unique_lock<std::mutex> uniqueLock(bonusMutex);
@@ -69,7 +71,7 @@ void Game::Run(Renderer &renderer,
 
         // After every second, update the window title.
         if (frame_end - title_timestamp >= 1000) {
-            renderer.UpdateWindowTitle(snake.alive, score, frame_count);
+            renderer.UpdateWindowTitle(snake.alive, score, lastScore, highScore.GetHighScore());
             frame_count = 0;
             title_timestamp = frame_end;
         }
@@ -142,3 +144,9 @@ void Game::Update() {
 int Game::GetScore() const { return score; }
 
 int Game::GetSize() const { return snake.size; }
+
+void Game::OnSnakeDie() {
+    std::cout << "Died! :(" << std::endl;
+    lastScore = score;
+    highScore.UpdateHighScore(score);
+}

@@ -13,7 +13,7 @@ class Renderer {
   ~Renderer();
 
   void Render(const Snake& snake, std::vector<Food> &food);
-  void UpdateWindowTitle(bool gameRunning, int score, int fps);
+  void UpdateWindowTitle(bool gameRunning, int score, int lastScore, int highScore);
 
  private:
   SDL_Window *sdl_window;

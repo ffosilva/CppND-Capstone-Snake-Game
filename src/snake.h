@@ -1,6 +1,7 @@
 #ifndef SNAKE_H
 #define SNAKE_H
 
+#include <functional>
 #include <vector>
 #include "SDL.h"
 
@@ -18,6 +19,7 @@ class Snake {
   void Reset();
   void GrowBody();
   bool SnakeCell(int x, int y);
+  std::function<void ()> OnSnakeDieListener{nullptr};
 
   Direction direction = Direction::kUp;
 

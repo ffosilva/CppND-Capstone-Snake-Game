@@ -10,6 +10,7 @@
 #include "renderer.h"
 #include "snake.h"
 #include "food.h"
+#include "highscore.h"
 
 class Game {
 public:
@@ -23,6 +24,9 @@ public:
 
 private:
     Snake snake;
+    HighScore highScore;
+
+    void OnSnakeDie();
 
     std::vector<Food> food;
     std::mutex foodMutex, bonusMutex;
@@ -34,6 +38,7 @@ private:
     std::uniform_int_distribution<int> random_h;
 
     int score{0};
+    int lastScore{0};
     bool running{true};
 
     int scoreSinceBonus{0};
