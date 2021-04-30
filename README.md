@@ -30,6 +30,85 @@ In this project, you can build your own C++ application or extend this Snake gam
 3. Compile: `cmake .. && make`
 4. Run it: `./SnakeGame`.
 
+## New Features
+
+* Now the game starts only after a <ENTER> keypress
+
+* There's no need of restarting the game for playing again
+
+* Persistent high score (using file stream)
+
+* Purple seed that reduces the speed in a half
+
+* Score & high score on the window title
+
+## Project Rubric
+
+### README (All Rubric Points REQUIRED)
+
+- [x] A README with instructions is included with the project
+
+- [x] The README indicates which project is chosen.
+
+- [x] The README includes information about each rubric point addressed.
+
+
+### Compiling and Testing (All Rubric Points REQUIRED)
+
+- [x] The submission must compile and run.
+
+#### Loops, Functions, I/O
+
+- [x] The project demonstrates an understanding of C++ functions and control structures.
+
+- [x] The project reads data from a file and process the data, or the program writes data to a file. [(See highscore.cpp)](https://raw.githubusercontent.com/ffosilva/CppND-Capstone-Snake-Game/5ec18e1e99dae3adba9a1e2fcd737499f7b58dfa/src/highscore.cpp) 
+
+- [x] The project accepts user input and processes the input.
+
+#### Object Oriented Programming
+
+- [x] The project uses Object Oriented Programming techniques.
+
+- [x] Classes use appropriate access specifiers for class members.
+
+- [x] Class constructors utilize member initialization lists.
+
+- [ ] Classes abstract implementation details from their interfaces.
+
+- [x] Classes encapsulate behavior.
+
+- [ ] Classes follow an appropriate inheritance hierarchy.
+
+- [x] Overloaded functions allow the same function to operate on different parameters.
+
+- [ ] Derived class functions override virtual base class functions.
+
+- [ ] Templates generalize functions in the project.
+
+#### Memory Management
+
+- [x] The project makes use of references in function declarations. [HERE](https://github.com/ffosilva/CppND-Capstone-Snake-Game/blob/5ec18e1e99dae3adba9a1e2fcd737499f7b58dfa/src/game.cpp#L39) and [HERE](https://github.com/ffosilva/CppND-Capstone-Snake-Game/blob/5ec18e1e99dae3adba9a1e2fcd737499f7b58dfa/src/highscore.cpp#L61) and more...
+
+- [x] The project uses destructors appropriately.
+
+- [x] The project uses scope / Resource Acquisition Is Initialization (RAII) where appropriate.
+
+- [ ] The project follows the Rule of 5.
+
+- [ ] The project uses move semantics to move data, instead of copying it, where possible.
+
+- [ ] The project uses smart pointers instead of raw pointers.
+
+Concurrency
+
+- [x] The project uses multithreading. [HERE](https://github.com/ffosilva/CppND-Capstone-Snake-Game/blob/5ec18e1e99dae3adba9a1e2fcd737499f7b58dfa/src/game.cpp#L17)
+
+- [ ] A promise and future is used in the project.
+
+- [x] A mutex or lock is used in the project. [HERE](https://github.com/ffosilva/CppND-Capstone-Snake-Game/blob/5ec18e1e99dae3adba9a1e2fcd737499f7b58dfa/src/game.cpp#L68) and [HERE](https://github.com/ffosilva/CppND-Capstone-Snake-Game/blob/5ec18e1e99dae3adba9a1e2fcd737499f7b58dfa/src/game.cpp#L91)
+
+- [x] A condition variable is used in the project. [HERE](https://github.com/ffosilva/CppND-Capstone-Snake-Game/blob/5ec18e1e99dae3adba9a1e2fcd737499f7b58dfa/src/game.cpp#L20)
+
 
 ## CC Attribution-ShareAlike 4.0 International
 
